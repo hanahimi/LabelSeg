@@ -4,6 +4,7 @@
 ## Requirements
 - python2.7
 - python-opencv
+- numpy
 - [optional] eclipse
 
 ## Usage

@@ -4,7 +4,7 @@
 ## Requirements
 - python2.7
 - python-opencv
-- [option] eclipse
+- [optional] eclipse
 
 ## Usage
 在config.txt的img_path项处，填写目标待标注图片

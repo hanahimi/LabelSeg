@@ -27,7 +27,7 @@ for key,item in items_table.items():
         pass
 img_path = items_table["img_path"]
 img_load = cv2.imread(img_path)
-print "please input '1' to '9'"
+print("please input '1' to '9'")
 h,w,_ = img_load.shape
 
 pad = items_table["pad"]
@@ -107,7 +107,7 @@ while(1):
     if 49 <= k <= 57:
         cur_label = k - 48
         cur_line_color = label_table[cur_label]['color']
-        print "curlabel:",cur_label,label_table[cur_label]['label']
+        print("curlabel:",cur_label,label_table[cur_label]['label'])
     elif k == 48:
         cur_line_color = label_table[cur_label]['color']
         
@@ -125,7 +125,7 @@ while(1):
    
     elif k==ord('z'):# z 返回上一次标注
         if len(img_draw_stack)>0 and len(img_label_stack)>0 :
-            print "len(img_draw_stack)=", len(img_draw_stack)
+            print("len(img_draw_stack)=", len(img_draw_stack))
             img_draw_stack.pop(-1)
             img_label_stack.pop(-1)
         if len(img_draw_stack)>0 and len(img_label_stack)>0 :
@@ -135,10 +135,10 @@ while(1):
     elif k==13: # 按Enter退出 并 保存
         img_sav = img_label[pad:pad+w,pad:pad+h]
         cv2.imwrite(img_path.split(".")[0]+"_seq.png",img_sav)
-        print "save", img_path.split(".")[0] + "_seq.png"
+        print("save", img_path.split(".")[0] + "_seq.png")
         break
     
     elif k==27: # 按Esc退出
-        print "esc"
+        print("esc")
         break
 

@@ -98,7 +98,7 @@ cv2.namedWindow('image')
 # °ó¶¨ÊÂ¼þ
 cv2.setMouseCallback('image',callback_draw_ploygon) 
 while(1):
-    img_roi = img_draw[pad:pad+w,pad:pad+h]
+    img_roi = img_draw[pad:pad+h,pad:pad+w]
     img_roi[img_roi==0] = img_load[img_roi==0]
     cv2.imshow('image',img_draw)
     cv2.imshow('label',disp_gray(img_label))

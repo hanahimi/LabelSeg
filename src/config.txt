@@ -12,7 +12,7 @@ class_9: "9 (10,106,250)"
 class_0: "0 (255,255,255)"
 
 # 读取图像路径
-img_path:"D:\SEG_GT\garage_20170216\target\49_WJR\bev\10x10_(45-45)\002280.jpg"
+img_path:"D:\wjr\10x10_(45-45)\001680.jpg"
 
 # 显示设置
 pad: 20	# 画面外扩

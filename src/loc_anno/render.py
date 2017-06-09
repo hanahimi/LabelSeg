@@ -65,6 +65,7 @@ def anime_check_pose(log_path, cfg_table):
     """ 用动画检查生成的pos文件的正确性，用小车画在上面
     """
     pos_map = PosMapOld(cfg_table)
+    pose_offset = cfg_table["world_center_offset"]
     with open(log_path,"r") as f:
         headers = f.readline()
         lines = f.readlines()
@@ -74,8 +75,8 @@ def anime_check_pose(log_path, cfg_table):
             frameID = int(items[0])
 #             if frameID % 20 != 0: continue
             items = items[1].split(" ")
-            x = float(items[0])
-            y = float(items[1])
+            x = float(items[0]) + pose_offset[0]
+            y = float(items[1]) + pose_offset[1]
             yaw = float(items[2])
             yaw = np.rad2deg(yaw)
             print(frameID, x, y, yaw)
@@ -95,6 +96,7 @@ def anime_check_pose(log_path, cfg_table):
     
 def recover_index(log_path, cfg_table):
     pos_map = PosMapOld(cfg_table)
+    pose_offset = cfg_table["world_center_offset"]
     with open(log_path,"r") as f:
         headers = f.readline()
         lines = f.readlines()
@@ -103,8 +105,8 @@ def recover_index(log_path, cfg_table):
             items = line.split(",")
             frameID = int(items[0])
             items = items[1].split(" ")
-            x = float(items[0])
-            y = float(items[1])
+            x = float(items[0]) + pose_offset[0]
+            y = float(items[1]) + pose_offset[1]
             yaw = float(items[2])
             yaw = np.rad2deg(yaw)
             pos_map.map_img = pos_map.mark_position(x, y, 0)

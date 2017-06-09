@@ -1,0 +1,3 @@
+"""
+pose label annotation tool
+"""

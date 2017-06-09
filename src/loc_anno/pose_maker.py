@@ -15,14 +15,15 @@ class PoseMaker:
     
     def __init__(self):
         self.win_title = "Pose_Maker"
-        self.mark_filename = "pose_mark.txt"
         self.pos_map = PosMap()
         self.cmdp = CommandParser()
         config_path = r"runtime_setting.txt"
         cfgpar = cfg_parser.TextParser()
         cfg_table = cfgpar(config_path)
         
-        self.bev_root = cfg_table["bev_root"]
+        self.bev_root = cfg_table["bev_root"] + "\\" + cfg_table["bev_name"]
+        self.mark_filename = cfg_table["bev_root"] + "\\pose_mark.txt"
+
         self.niter = 10
         self.vpose_arr = []
         self.id_arr = []
@@ -31,17 +32,17 @@ class PoseMaker:
         self.l_button = 0
         self.rot_orient = 1
         self.cur_id = 0
-        
-        if os.path.exists(self.mark_filename):
-            with open(self.mark_filename) as mf:
-                lines = mf.readlines()
-                for line in lines:
-                    fid,x,y,deg = line.strip("\n").split(" ")
-                    vp = VPose(int(fid), int(x), int(y), float(deg))
-                    self.vpose_arr.append(vp)
-                    self.id_arr.append(vp.id)
-                if self.vpose_arr:
-                    self.cur_id = self.vpose_arr[-1].id
+        if cfg_table["recover"] == 1:
+            if os.path.exists(self.mark_filename):
+                with open(self.mark_filename) as mf:
+                    lines = mf.readlines()
+                    for line in lines:
+                        fid,x,y,deg = line.strip("\n").split(" ")
+                        vp = VPose(int(fid), int(x), int(y), float(deg))
+                        self.vpose_arr.append(vp)
+                        self.id_arr.append(vp.id)
+                    if self.vpose_arr:
+                        self.cur_id = self.vpose_arr[-1].id
 
 
 

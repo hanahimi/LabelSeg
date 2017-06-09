@@ -18,7 +18,9 @@ map_path: "上汽地下地图.jpg"
 project_factors: [155,490,9,-10]	# "上汽地下地图.jpg"
 # project_factors: [519,480,3.8,-3.8] # saic_pk.jpg
 
-bev_root: "F:\LOC_Code_Dataset\saic_dataset\oflim相机数据\ofilm_raw_data_ug\20170519_EP21_car01\V1\bev\7x7_(-1--1)"
+bev_root: "F:\LOC_Code_Dataset\saic_dataset\oflim相机数据\ofilm_raw_data_ug\20170519_EP21_car01\V1"
+bev_name:"bev\7x7_(-1--1)"
+recover: 1
 
 # 数据集中
 # 生成的pos坐标统一减去的距离（bx, by）,单位m

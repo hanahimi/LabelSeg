@@ -67,21 +67,19 @@ def anime_check_pose(log_path, cfg_table):
     pos_map = PosMapOld(cfg_table)
     pose_offset = cfg_table["world_center_offset"]
     with open(log_path,"r") as f:
-        headers = f.readline()
         lines = f.readlines()
         for line in lines:
-            items = line.strip("\n")
-            items = line.split(",")
+            items = line.strip("\n").split(" ")
             frameID = int(items[0])
-#             if frameID % 20 != 0: continue
-            items = items[1].split(" ")
-            x = float(items[0]) + pose_offset[0]
-            y = float(items[1]) + pose_offset[1]
-            yaw = float(items[2])
+            x = float(items[1]) + pose_offset[0]
+            y = float(items[2]) + pose_offset[1]
+            yaw = float(items[3])
             yaw = np.rad2deg(yaw)
             print(frameID, x, y, yaw)
             map_img = pos_map.project_position(x, y, yaw)
-            bev_path = r"%s\%06d.jpg" % (cfg_table["bev_root"],frameID)
+            bev_path = r"%s\%s\%06d.jpg" % (cfg_table["bev_root"],
+                                            cfg_table["bev_name"],
+                                            frameID)
             if os.path.exists(bev_path):
                 im_bev = cv2.imread(bev_path)
                 cv2.imshow("result", map_img)
@@ -101,13 +99,12 @@ def recover_index(log_path, cfg_table):
         headers = f.readline()
         lines = f.readlines()
         for line in lines:
-            items = line.strip("\n")
-            items = line.split(",")
+            items = line.strip("\n").split(" ")
             frameID = int(items[0])
-            items = items[1].split(" ")
-            x = float(items[0]) + pose_offset[0]
-            y = float(items[1]) + pose_offset[1]
-            yaw = float(items[2])
+#             if frameID % 20 != 0: continue
+            x = float(items[1]) + pose_offset[0]
+            y = float(items[2]) + pose_offset[1]
+            yaw = float(items[3])
             yaw = np.rad2deg(yaw)
             pos_map.map_img = pos_map.mark_position(x, y, 0)
         pos_map.disp_map()

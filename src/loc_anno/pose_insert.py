@@ -10,7 +10,12 @@ import config_parser as cfg_parser
 from render import anime_check_pose,recover_index
 import numpy as np
 
-mark_file = "pose_mark.txt"
+config_path = r"runtime_setting.txt"
+cfgpar = cfg_parser.TextParser()
+cfg_table = cfgpar(config_path)
+
+
+mark_file = cfg_table["bev_root"] + "\\pose_mark.txt"
 
 vpose_arr = []
 with open(mark_file) as mf:
@@ -58,28 +63,20 @@ for i in range(1,n_mark):
 vp_all.append(vpose_arr[-1])    # 补充最后的关键帧
 
 # 保存最终pos文件
-config_path = r"runtime_setting.txt"
-cfgpar = cfg_parser.TextParser()
-cfg = cfgpar(config_path)
-pft = cfg["project_factors"]
-pose_offset = cfg["world_center_offset"]
+pft = cfg_table["project_factors"]
+pose_offset = cfg_table["world_center_offset"]
 
-filename = "pos.txt"
-with open(filename,"w") as f:
+log_path = cfg_table["bev_root"] + r"//pos.txt"
+with open(log_path,"w") as f:
     for vp in vp_all:
         wx = 1.0*(vp.x - pft[0])/pft[2] - pose_offset[0]
         wy = 1.0*(vp.y - pft[1])/pft[3] - pose_offset[1]
         vp.rotate_clk_wise(0, 1)
-        s = "%05d,%f %f %f\n" % (vp.id, wx, wy, np.deg2rad(vp.deg))
+        s = "%05d %f %f %f\n" % (vp.id, wx, wy, np.deg2rad(vp.deg))
         f.write(s)
-    print("save file in %s" % filename)
+    print("save file in %s" % log_path)
 
 # 检查pos文件
-config_path = r"runtime_setting.txt"
-cfgpar = cfg_parser.TextParser()
-cfg_table = cfgpar(config_path)
-
-log_path = r"pos.txt"
 recover_index(log_path, cfg_table)
 anime_check_pose(log_path, cfg_table)
 

@@ -14,11 +14,18 @@ class_grass: "4 (255,247,140)"
 # 停车位区域(植草砖路)
 class_park: "5 (200,121,135)"      
 
+class_0: "0 (0,0,0)"
 
-class_0: "0 (255,255,255)"
+# 默认底色类别 如果没有默认，注释该行即可
+def_class: "class_road"
+
+# 保存时颜色增益
+color_gain_save: 25
+# 标注时颜色增益
+color_gain_disp: 25
 
 # 读取图像路径
-img_path:"D:\wjr\017170.jpg"
+img_path:"D:\img\test.jpg"
 
 # 显示设置
 pad: 20	# 画面外扩

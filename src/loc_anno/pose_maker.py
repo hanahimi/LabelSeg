@@ -20,7 +20,7 @@ class PoseMaker:
         config_path = r"runtime_setting.txt"
         cfgpar = cfg_parser.TextParser()
         cfg_table = cfgpar(config_path)
-        
+        self.cfg_table = cfg_table
         self.bev_root = cfg_table["bev_root"] + "\\" + cfg_table["bev_name"]
         self.mark_filename = cfg_table["bev_root"] + "\\pose_mark.txt"
 
@@ -129,8 +129,17 @@ class PoseMaker:
             elif key==ord('s'): # 向下微调单位像素
                 self.vpose_arr[-1].y += 1
             vp = self.vpose_arr[-1]
+#             self.pos_map.mark_cmd_text("cur id:%d  (%d,%d,%2.2f)-%d" \
+#                    % (self.cur_id, vp.x, vp.y, vp.deg,vp.id))
+
+            pft = self.cfg_table["project_factors"]
+            pose_offset = self.cfg_table["world_center_offset"]
+            wx = 1.0*(vp.x - pft[0])/pft[2] - pose_offset[0]
+            wy = 1.0*(vp.y - pft[1])/pft[3] - pose_offset[1]
+
             self.pos_map.mark_cmd_text("cur id:%d  (%d,%d,%2.2f)-%d" \
-                   % (self.cur_id, vp.x, vp.y, vp.deg,vp.id))
+                   % (self.cur_id, wx, wy, vp.deg,vp.id))
+
 
         if key==ord('i'): # 输入命令
             command = raw_input("input cammand:\n")

@@ -11,7 +11,7 @@ import numpy as np
 class CarModel:
     def __init__(self):
         self.img = cv2.imread(r'car.png')
-        self.img = cv2.resize(self.img, (12,12))
+        self.img = cv2.resize(self.img, (48,48))
         self.rows = self.img.shape[0]
         self.cols = self.img.shape[1]
         
@@ -30,7 +30,10 @@ class PosMap:
     def __init__(self):
         self.map_path = r"map.jpg"
         self.map_img = cv2.imread(self.map_path)
-        self.coef = [65,277,5.08, -5.6]
+        self.h = self.map_img.shape[0]
+        self.w = self.map_img.shape[1]
+        
+        self.coef = [42,413, 7, -7]
         self.car_logo = CarModel()
         self.result = np.copy(self.map_img)
         
@@ -50,11 +53,10 @@ class PosMap:
         sub_roi[car_img!=0] = car_img[car_img!=0]
 
 
-
 if __name__=="__main__":
     pass
     pm = PosMap()
-    pm.project_position(0,0,0)
+    pm.project_position(0,44.28,0)
     cv2.imshow("ss", pm.result)
     cv2.waitKey(0)
     cv2.destroyAllWindows()

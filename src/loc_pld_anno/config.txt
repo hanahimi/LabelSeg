@@ -40,6 +40,8 @@ car_center_x: 192
 # 车辆后轴中心像素 y
 car_center_y: 225
 
+# CAN 信号表根目录
+can_match_path:"D:\bev\can_match.txt"
 
 
 

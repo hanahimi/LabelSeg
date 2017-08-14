@@ -20,7 +20,7 @@
 # 注意：
 # 1. 点击距离自车最近的库位，尽量选择清晰的位置
 # 2. 如果当前帧看不到任何库位角点，不用标注
-
+# 3. 每看到一个新的库位，都要至少标注一次，
 
 # BEV 图像所在的根目录
 bev_root:"D:\bev\7x7_(-1--1)"
@@ -42,6 +42,11 @@ car_center_y: 225
 
 # CAN 信号表根目录
 can_match_path:"D:\bev\can_match.txt"
+
+# EP21_01
+wheel_base: 2810
+vehicle_width: 1860
+
 
 
 

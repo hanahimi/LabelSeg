@@ -20,6 +20,8 @@ from loc_plam import *
 from pld_map import *
 from draw_map import *
 from dataio import get_filelist
+from keyframe_insert import *
+
 
 class LocPldLabeler:
 
@@ -36,6 +38,7 @@ class LocPldLabeler:
         
         self.bev_disp_w = 512
         self.bev_disp_h = 512
+        
         
         self.car_center_x_ori = cfg_table["car_center_x"]
         self.car_center_y_ori = cfg_table["car_center_y"]
@@ -77,6 +80,10 @@ class LocPldLabeler:
         self.console_output = ""
         self.update_console("All Setting Loaded")
         
+        # 用于实时更新地图显示的DR
+        self.loc_dr = LocDR()
+        
+        
     def mouse_add_point(self,event, x, y,flags,param):
         """
         当按下左键在画面标注一个角点, 标注该角点在车辆坐标系下的位置
@@ -105,8 +112,16 @@ class LocPldLabeler:
                                 if pk_id_str in self.pklb.park_table:
                                     theta_deg, x_car, y_car = self.pklb.calcVehWorldPosion(self.pld_pose, pk_id_str)
                                     self.pm.project_position(x_car, y_car, theta_deg)
+
                                     if self.save == 1:
                                         self.save_labeling(x_car, y_car, theta_deg)
+#                                         key_point = KeyPoint()
+#                                         f = os.path.split(self.imlist[self.img_idx])[-1][:-4]
+#                                         key_point.frame = int(f)
+#                                         key_point.x = x_car
+#                                         key_point.y = y_car
+#                                         key_point.yaw_deg = theta_deg
+#                                         self.loc_dr.add_keypoint(key_point)
                                     self.update_console("sav Wx:%2.2fm Wy:%2.2fm H:%2.2fdeg" % (x_car,y_car, theta_deg))
                                 else:
                                     self.update_console("invalid input")
@@ -132,7 +147,13 @@ class LocPldLabeler:
             print("esc")
             return 0
         
+        """
+        每次切换帧时，应执行一次运动模型的推算，从上一帧开始 推算当前帧
+        并在地图中画出车的路径
+        """
         if key==97:         # "A"
+#             f = os.path.split(self.imlist[self.img_idx])[-1][:-4]
+#             cur_frameID = int(f)
             self.point_id = 0
             self.pixs = []
             self.pld_pose = []
@@ -142,8 +163,11 @@ class LocPldLabeler:
             _cur_img = cv2.imread(self.imlist[self.img_idx])
             self.cur_img = cv2.resize(_cur_img, (512,512))
             self.update_console("load id: %d" % self.img_idx)
+#             self.loc_dr.pop(cur_frameID)
             
         if key==100:        # "D"
+#             f = os.path.split(self.imlist[self.img_idx])[-1][:-4]
+#             cur_frameID = int(f)
             self.point_id = 0
             self.pixs = []
             self.pld_pose = []
@@ -153,6 +177,16 @@ class LocPldLabeler:
             _cur_img = cv2.imread(self.imlist[self.img_idx])
             self.cur_img = cv2.resize(_cur_img, (512,512))
             self.update_console("load id: %d" % self.img_idx)
+            
+#             self.loc_dr.updateDR(cur_frameID)
+# 
+#         if key==100 or key == 97:
+#             print len(self.loc_dr.vm_pose)
+#             if len(self.loc_dr.vm_pose) > 0:
+#                 print self.loc_dr.vm_pose[-1]
+#                 for pos in self.loc_dr.vm_pose:
+#                     pos_x, pos_y, pos_yaw = pos
+#                     self.pm.mark_position(pos_x, pos_y, pos_yaw)
         
         # 1,2,3,4
         if key==49:
@@ -173,7 +207,7 @@ class LocPldLabeler:
         imname = os.path.split(impath)[-1][:-4]
         gtpath = impath[:-3]+"txt"
         with open(gtpath,"w") as f:
-            # frameID, Wx, Wy, Wtheta
+            # frameID, Wx, Wy, Wtheta-deg
             gt = "%s %3.5f %3.5f %3.5f" % (imname, x_car, y_car, theta_deg)
             f.write(gt)
         

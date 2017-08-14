@@ -30,6 +30,9 @@ class PosMap:
     def __init__(self):
         self.map_path = r"map.jpg"
         self.map_img = cv2.imread(self.map_path)
+
+        self.mark_result = cv2.imread(self.map_path)
+
         self.h = self.map_img.shape[0]
         self.w = self.map_img.shape[1]
         
@@ -52,7 +55,34 @@ class PosMap:
         sub_roi = self.result[pil_y-h/2:pil_y+h/2, pil_x-w/2:pil_x+w/2,:]
         sub_roi[car_img!=0] = car_img[car_img!=0]
 
+    def mark_position(self, pos_x, pos_y, pos_yaw, keypoint=False):
+        """ 将世界坐标系的点记录到图像中，改写原有图像
+        input:
+          pos_x, pos_y, pos_yaw
+        output:
+          map_img: 系统图像的当前状态
+        """
+        pil_x = int(1.0 * pos_x * self.coef[2] + self.coef[0])
+        pil_y = int(1.0 * pos_y * self.coef[3] + self.coef[1])
+        
+        if keypoint:
+            cv2.circle(self.mark_result,(pil_x,pil_y),5,(0,0,255),-1)
+        else:
+            cv2.circle(self.mark_result,(pil_x,pil_y),9,(19,162,247),1)
+            cv2.circle(self.mark_result,(pil_x,pil_y),2,(0,0,0),-1)
+        self.ischanged = True
 
+        return self.map_img
+    
+    def disp_map(self, filename=None):
+        h,w,_ = self.map_img.shape
+        imresize = cv2.resize(self.map_img, (w*2/3, h*2/3))
+        cv2.imshow("map",imresize)
+        if filename:
+            cv2.imwrite(filename,imresize)
+        cv2.waitKey(0)
+        
+        
 if __name__=="__main__":
     pass
     pm = PosMap()

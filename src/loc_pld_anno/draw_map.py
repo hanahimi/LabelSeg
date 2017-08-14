@@ -56,7 +56,7 @@ class PosMap:
 if __name__=="__main__":
     pass
     pm = PosMap()
-    pm.project_position(0,44.28,0)
+    pm.project_position(0,0,0)
     cv2.imshow("ss", pm.result)
     cv2.waitKey(0)
     cv2.destroyAllWindows()

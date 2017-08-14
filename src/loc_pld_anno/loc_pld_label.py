@@ -32,13 +32,13 @@ class LocPldLabeler:
         self.bev_root = cfg_table["bev_root"]
         self.pix_w = cfg_table["pix_w"]
         self.pix_h = cfg_table["pix_h"]
+        self.save = 1 if (cfg_table["save"]=="on") else 0
         
         self.bev_disp_w = 512
         self.bev_disp_h = 512
         
-        self.car_center_x_ori = 192
-        self.car_center_y_ori = 225
-        
+        self.car_center_x_ori = cfg_table["car_center_x"]
+        self.car_center_y_ori = cfg_table["car_center_y"]
         
         self.car_center = (self.car_center_x_ori * self.bev_disp_w/384,
                            self.car_center_y_ori * self.bev_disp_w/384) # imgx, imgy 
@@ -83,7 +83,6 @@ class LocPldLabeler:
         当第二次按下时，计算车辆在世界坐标系下的位置
         """
         if event == cv2.EVENT_LBUTTONDOWN:
-            
             # 检测鼠标 角点区域
             if (0 < x < self.bev_disp_w) and (0 < y < self.bev_disp_h):
                 if len(self.pixs) < 2:
@@ -105,8 +104,10 @@ class LocPldLabeler:
                                 pk_id_str = "".join(self.plam.key_log)
                                 if pk_id_str in self.pklb.park_table:
                                     theta_deg, x_car, y_car = self.pklb.calcVehWorldPosion(self.pld_pose, pk_id_str)
-                                    self.update_console("Wx:%2.2fm Wy:%2.2fm H:%2.2fdeg" % (x_car,y_car, theta_deg))
                                     self.pm.project_position(x_car, y_car, theta_deg)
+                                    if self.save == 1:
+                                        self.save_labeling(x_car, y_car, theta_deg)
+                                    self.update_console("sav Wx:%2.2fm Wy:%2.2fm H:%2.2fdeg" % (x_car,y_car, theta_deg))
                                 else:
                                     self.update_console("invalid input")
                             else:
@@ -166,8 +167,16 @@ class LocPldLabeler:
         if key==52:
             self.update_console("sel point 4")
             self.point_id = 3
+    
+    def save_labeling(self,x_car, y_car, theta_deg):
+        impath = self.imlist[self.img_idx]
+        imname = os.path.split(impath)[-1][:-4]
+        gtpath = impath[:-3]+"txt"
+        with open(gtpath,"w") as f:
+            # frameID, Wx, Wy, Wtheta
+            gt = "%s %3.5f %3.5f %3.5f" % (imname, x_car, y_car, theta_deg)
+            f.write(gt)
         
-
     def update_subWindow(self, x, y):
         sh,sw,_ = self.sub_window.shape
         if y-sh/4 < 0 or y+sh/4 > self.bev_disp_h-1\
@@ -184,11 +193,11 @@ class LocPldLabeler:
         
     def update_console(self, str_input, pos = 1):
         if pos == 1:    # 更新debug提示
-            self.window[348:397,531:846,:] = 0
+            self.window[348:398,531:854,:] = 0
             cv2.putText(self.window, str_input, (531,358),cv2.FONT_HERSHEY_DUPLEX, 0.5,(200,200,200),thickness=1)
 
         elif pos == 2: # 更新上方过程参数
-            self.window[480:503,525:655,:] = 0
+            self.window[480:510,525:680,:] = 0
             cv2.putText(self.window, str_input, (526,503),cv2.FONT_HERSHEY_PLAIN, 0.8,(200,200,100),thickness=1)
 
     def mainloop(self):
@@ -203,7 +212,6 @@ class LocPldLabeler:
             key = cv2.waitKey(10) & 0xFF
             if 0 == self.keyboard_respond(key):
                 break
-    
     
         
 if __name__=="__main__":

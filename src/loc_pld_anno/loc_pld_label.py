@@ -136,6 +136,14 @@ class LocPldLabeler:
     def keyboard_respond(self, key):
         """ ÏìÓ¦¼üÅÌÊÂ¼þ
         """
+        if key==114:    # R
+            impath = self.imlist[self.img_idx]
+            imname = os.path.split(impath)[-1][:-4]
+            gtpath = impath[:-3]+"txt"
+            gtpath = "%s/%s" % (self.gt_root, imname+".txt")
+            if os.path.exists(gtpath):
+                os.remove(gtpath)
+            
         if key==27:
             print("esc")
             return 0
@@ -185,7 +193,10 @@ class LocPldLabeler:
                     self.pm.project_position(x_car, y_car, theta_deg)
             else:
                 self.pm.result[:] = self.pm.map_img
-                    
+
+        if key==32:
+            print "space"
+            
         # 1,2,3,4
         if key==49:
             self.update_console("sel point 1")

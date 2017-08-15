@@ -32,13 +32,14 @@ class LocPldLabeler:
         cfg_table = cfgpar(config_path)
         
         self.bev_root = cfg_table["bev_root"]
+        self.gt_root = cfg_table["gt_root"]
+        
         self.pix_w = cfg_table["pix_w"]
         self.pix_h = cfg_table["pix_h"]
         self.save = 1 if (cfg_table["save"]=="on") else 0
         
         self.bev_disp_w = 512
         self.bev_disp_h = 512
-        
         
         self.car_center_x_ori = cfg_table["car_center_x"]
         self.car_center_y_ori = cfg_table["car_center_y"]
@@ -80,9 +81,6 @@ class LocPldLabeler:
         self.console_output = ""
         self.update_console("All Setting Loaded")
         
-        # 用于实时更新地图显示的DR
-        self.loc_dr = LocDR()
-        
         
     def mouse_add_point(self,event, x, y,flags,param):
         """
@@ -100,6 +98,8 @@ class LocPldLabeler:
                     pldy = (self.car_center[1] - y)/self.pix_h
                     self.pld_pose.append((self.point_id, pldx, pldy))
                     addCorrid(self.cur_img,x,y,pldx,pldy)
+                    
+#                     self.point_id += 3
             
             # 检测鼠标 按钮区域
             if (self.bev_disp_w < x < self.bev_disp_w+self.plam.w) and (0 < y < self.win_H):
@@ -115,13 +115,6 @@ class LocPldLabeler:
 
                                     if self.save == 1:
                                         self.save_labeling(x_car, y_car, theta_deg)
-#                                         key_point = KeyPoint()
-#                                         f = os.path.split(self.imlist[self.img_idx])[-1][:-4]
-#                                         key_point.frame = int(f)
-#                                         key_point.x = x_car
-#                                         key_point.y = y_car
-#                                         key_point.yaw_deg = theta_deg
-#                                         self.loc_dr.add_keypoint(key_point)
                                     self.update_console("sav Wx:%2.2fm Wy:%2.2fm H:%2.2fdeg" % (x_car,y_car, theta_deg))
                                 else:
                                     self.update_console("invalid input")
@@ -152,8 +145,6 @@ class LocPldLabeler:
         并在地图中画出车的路径
         """
         if key==97:         # "A"
-#             f = os.path.split(self.imlist[self.img_idx])[-1][:-4]
-#             cur_frameID = int(f)
             self.point_id = 0
             self.pixs = []
             self.pld_pose = []
@@ -163,11 +154,8 @@ class LocPldLabeler:
             _cur_img = cv2.imread(self.imlist[self.img_idx])
             self.cur_img = cv2.resize(_cur_img, (512,512))
             self.update_console("load id: %d" % self.img_idx)
-#             self.loc_dr.pop(cur_frameID)
             
         if key==100:        # "D"
-#             f = os.path.split(self.imlist[self.img_idx])[-1][:-4]
-#             cur_frameID = int(f)
             self.point_id = 0
             self.pixs = []
             self.pld_pose = []
@@ -177,17 +165,22 @@ class LocPldLabeler:
             _cur_img = cv2.imread(self.imlist[self.img_idx])
             self.cur_img = cv2.resize(_cur_img, (512,512))
             self.update_console("load id: %d" % self.img_idx)
-            
-#             self.loc_dr.updateDR(cur_frameID)
-# 
-#         if key==100 or key == 97:
-#             print len(self.loc_dr.vm_pose)
-#             if len(self.loc_dr.vm_pose) > 0:
-#                 print self.loc_dr.vm_pose[-1]
-#                 for pos in self.loc_dr.vm_pose:
-#                     pos_x, pos_y, pos_yaw = pos
-#                     self.pm.mark_position(pos_x, pos_y, pos_yaw)
-        
+
+        if key==97 or key==100:
+            impath = self.imlist[self.img_idx]
+            imname = os.path.split(impath)[-1][:-4]
+            gtpath = impath[:-3]+"txt"
+            gtpath = "%s/%s" % (self.gt_root, imname+".txt")
+ 
+            if os.path.exists(gtpath):
+                with open(gtpath,"r") as f:
+                    l = f.readline()
+                    items = l.strip().split(" ")  
+                    _, x_car, y_car, theta_deg = [float(a) for a in items]
+                    self.pm.project_position(x_car, y_car, theta_deg)
+            else:
+                self.pm.result[:] = self.pm.map_img
+                    
         # 1,2,3,4
         if key==49:
             self.update_console("sel point 1")
@@ -205,7 +198,7 @@ class LocPldLabeler:
     def save_labeling(self,x_car, y_car, theta_deg):
         impath = self.imlist[self.img_idx]
         imname = os.path.split(impath)[-1][:-4]
-        gtpath = impath[:-3]+"txt"
+        gtpath = "%s/%s" % (self.gt_root, imname+".txt")
         with open(gtpath,"w") as f:
             # frameID, Wx, Wy, Wtheta-deg
             gt = "%s %3.5f %3.5f %3.5f" % (imname, x_car, y_car, theta_deg)

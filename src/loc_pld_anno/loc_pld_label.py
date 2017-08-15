@@ -152,8 +152,11 @@ class LocPldLabeler:
                 self.point_num = 0
                 self.img_idx -= 1
             _cur_img = cv2.imread(self.imlist[self.img_idx])
+            
+            imname = os.path.split(self.imlist[self.img_idx])[-1][:-4]
+            
             self.cur_img = cv2.resize(_cur_img, (512,512))
-            self.update_console("load id: %d" % self.img_idx)
+            self.update_console("load id: %s" % imname)
             
         if key==100:        # "D"
             self.point_id = 0
@@ -164,7 +167,9 @@ class LocPldLabeler:
                 self.img_idx += 1
             _cur_img = cv2.imread(self.imlist[self.img_idx])
             self.cur_img = cv2.resize(_cur_img, (512,512))
-            self.update_console("load id: %d" % self.img_idx)
+            imname = os.path.split(self.imlist[self.img_idx])[-1][:-4]
+            self.update_console("load id: %s" % imname)
+
 
         if key==97 or key==100:
             impath = self.imlist[self.img_idx]

@@ -23,9 +23,9 @@
 # 3. 每看到一个新的库位，都要至少标注一次，
 
 # BEV 图像所在的根目录
-bev_root:"D:\bev\7x7_(-1--1)"
+bev_root:"I:\LOC_Code_Dataset\saic_dataset\oflim相机数据\ofilm_raw_data_ug\20170807_EP21_car02\01_入口进车库分别在左中右车道绕外圈多次\bev\7x7_(-1--1)"
 # gt文件的根目录
-gt_root:"D:\bev\gt"
+gt_root:"I:\LOC_Code_Dataset\saic_dataset\oflim相机数据\ofilm_raw_data_ug\20170807_EP21_car02\01_入口进车库分别在左中右车道绕外圈多次\gt"
 
 
 # BEV 图像中 W 方向 每米 包含的像素
